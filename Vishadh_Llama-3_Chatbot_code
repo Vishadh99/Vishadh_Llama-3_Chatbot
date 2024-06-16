@@ -1,0 +1,50 @@
+import requests
+import os
+
+def get_response_from_llama3(user_input):
+    """
+    Function to get a response from Llama-3 API.
+    Replace this function with actual API calls to Llama-3 when available.
+    """
+    api_url = 'https://api.llama3service.com/v1/generate'  # Replace with actual Llama-3 API endpoint
+    api_key = os.getenv('LLAMA3_API_KEY')  # Ensure your API key is set in environment variables
+
+    headers = {
+        'Authorization': f'Bearer {api_key}',
+        'Content-Type': 'application/json'
+    }
+
+    data = {
+        'prompt': user_input,
+        'max_tokens': 50,  
+        'temperature': 0.7,  
+        'top_p': 1.0  
+    }
+
+    try:
+        response = requests.post(api_url, headers=headers, json=data)
+        response.raise_for_status()
+        return response.json().get('choices', [{}])[0].get('text', 'No response text found.')
+    except requests.exceptions.HTTPError as http_err:
+        return f'HTTP error occurred: {http_err}'
+    except Exception as err:
+        return f'Other error occurred: {err}'
+
+def chat_with_llama3():
+    """
+    Initiates an infinite chat loop with Llama-3.
+    Users can type their messages, and the system responds using Llama-3.
+    """
+    print("Welcome to the Llama-3 chat session. Type 'exit' to end the chat.")
+
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() == 'exit':
+            print("Exiting chat. Goodbye!")
+            break
+
+        response = get_response_from_llama3(user_input)
+        print(f"Llama-3: {response}")
+
+if __name__ == "__main__":
+    chat_with_llama3()
